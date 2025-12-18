@@ -13,7 +13,10 @@
         <section class="flex justify-between items-center p-6 bg-white shadow-md rounded-2xl dark-target">
             <h1 id="main-title" class="text-2xl font-bold text-gray-800">JS Uygulama Paneli</h1>
             <button id="theme-toggle" class="px-6 py-2 bg-slate-800 text-white rounded-full hover:bg-slate-700 transition">
-                Tema Değiştir 🌙/☀️
+                Tema Değiştir
+                <img src="js_Ders/images/moon.svg" alt="Ay" class="inline w-4 h-4 mx-2 align-text-bottom dark:invert" decoding="async">
+                /
+                <img src="js_Ders/images/sun.svg" alt="Gündüz" class="inline w-4 h-4 ml-2 align-text-bottom" decoding="async">
             </button>
         </section>
 
@@ -35,8 +38,8 @@
                     Toplam: 150₺
                 </div>
                 <div id="shipping-badge" class="hidden">
-                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase">
-                        Kargo Bedava! 🚚
+                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase">
+                        <img src="js_Ders/images/truck.svg" alt="Kargo" class="inline w-4 h-4 mr-2 align-text-bottom" decoding="async">Kargo Bedava!
                     </span>
                 </div>
             </div>
@@ -79,8 +82,8 @@
                 <h3 class="text-2xl font-bold">${paket.ad}</h3>
                 <p class="text-4xl font-black my-4">${paket.fiyat}₺<span class="text-sm font-normal text-gray-500">/ay</span></p>
                 <ul class="text-gray-600 space-y-2 mb-6">
-                    <li>✅ ${paket.ozellik}</li>
-                    <li>✅ 7/24 Destek</li>
+                    <li><img src="js_Ders/images/check.svg" alt="ok" class="inline w-4 h-4 mr-2 align-text-bottom"> ${paket.ozellik}</li>
+                    <li><img src="js_Ders/images/check.svg" alt="ok" class="inline w-4 h-4 mr-2 align-text-bottom"> 7/24 Destek</li>
                 </ul>
                 <button class="w-full py-2 ${paket.populer ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'} rounded-xl font-bold">Satın Al</button>
             </div>
