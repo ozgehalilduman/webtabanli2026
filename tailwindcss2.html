@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="tr" id="mainHtml" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS Sınıf Paneli - v3.0 (Events & Forms)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300 font-sans">
+
+    <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl transform transition-all scale-95 border dark:border-gray-700">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-black">Yeni Kayıt</h3>
+                <button id="closeModal" class="text-gray-400 hover:text-red-500 text-2xl">&times;</button>
+            </div>
+            
+            <form id="studentForm" class="space-y-4">
+                <input type="text" id="formAd" placeholder="Ad Soyad" required class="w-full p-3 rounded-xl bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="formNo" placeholder="Okul No" required class="w-full p-3 rounded-xl bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 outline-none focus:ring-2 focus:ring-blue-500">
+                <select id="formDal" class="w-full p-3 rounded-xl bg-gray-50 dark:bg-gray-900 border dark:border-gray-700 outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="Yazılım Geliştirme Dalı">Yazılım Geliştirme Dalı</option>
+                    <option value="Ağ İşletmenliği Dalı">Ağ İşletmenliği Dalı</option>
+                    <option value="Siber Güvenlik Dalı">Siber Güvenlik Dalı</option>
+                </select>
+                <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-500/30">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <header class="p-6 border-b dark:border-gray-800 flex justify-between items-center max-w-6xl mx-auto">
+        <div>
+            <h1 class="text-xl font-mono font-bold tracking-tighter">js_sinifi_<span class="text-blue-600">v3.0</span></h1>
+            <p class="text-[10px] text-gray-400 uppercase tracking-widest leading-none mt-1">Events & Forms</p>
+        </div>
+        
+        <div class="flex gap-2">
+            <button id="openModal" class="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-sm hover:scale-105 transition-all shadow-lg shadow-blue-500/20">+ Yeni Öğrenci</button>
+            <button id="themeToggle" class="p-2 rounded-xl bg-gray-50 dark:bg-gray-800 border dark:border-gray-700">
+                <span class="dark:hidden">🌙</span><span class="hidden dark:inline">☀️</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-6">
+        <div class="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div>
+                <h2 class="text-2xl font-black italic">Öğrenciler</h2>
+                <span id="studentCount" class="text-[10px] font-bold bg-blue-600 text-white px-3 py-1 rounded-full uppercase">0 Kayıt</span>
+            </div>
+            <input type="text" id="searchInput" placeholder="Hızlı ara..." class="p-3 w-full md:w-64 rounded-2xl bg-gray-50 dark:bg-gray-800 border dark:border-gray-700 outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div id="studentGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+        <div id="noResult" class="hidden text-center py-20 italic text-gray-400 font-mono">Sonuç bulunamadı.</div>
+    </main>
+
+    <script>
+        // --- TEMA VE MODAL KONTROLLERİ (Event Basics) ---
+        const themeBtn = document.getElementById('themeToggle');
+        const modal = document.getElementById('modalOverlay');
+        const openModalBtn = document.getElementById('openModal');
+        const closeModalBtn = document.getElementById('closeModal');
+
+        themeBtn.addEventListener('click', () => document.getElementById('mainHtml').classList.toggle('dark'));
+        
+        openModalBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+        closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+        // --- VERİ VE RENDER ---
+        let ogrenciler = [
+            { adSoyad: "Hüseyin ÖNCEL", no: "1740", sinif: "AMP-11/A", alan: "Bilişim", dal: "Yazılım Geliştirme Dalı", avatarNormal: "https://api.dicebear.com/7.x/avataaars/svg?seed=Huseyin&translateY=50", avatarHover: "https://api.dicebear.com/7.x/avataaars/svg?seed=Huseyin&translateY=0" },
+            { adSoyad: "Ayşe DEMİR", no: "1852", sinif: "AMP-11/A", alan: "Bilişim", dal: "Yazılım Geliştirme Dalı", avatarNormal: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ayse&translateY=50", avatarHover: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ayse&translateY=0" }
+        ];
+
+        const grid = document.getElementById('studentGrid');
+        const countSpan = document.getElementById('studentCount');
+
+        function render(liste = ogrenciler) {
+            grid.innerHTML = "";
+            countSpan.innerText = `${liste.length} KAYIT`;
+            document.getElementById('noResult').classList.toggle('hidden', liste.length > 0);
+
+            liste.forEach(o => {
+                const card = document.createElement('div');
+                card.className = "group shadow-md bg-white dark:bg-gray-800 border dark:border-gray-700 p-5 rounded-[2rem] hover:shadow-xl transition-all duration-300 relative overflow-hidden";
+                card.innerHTML = `
+                    <div class="relative shadow-xl w-32 h-32 mb-5 bg-gray-50 dark:bg-gray-900 rounded-full overflow-hidden mx-auto">
+                        <img src="${o.avatarNormal}" class="absolute inset-0 w-full h-full object-cover transition-all duration-500 z-20 group-hover:opacity-0 group-hover:-translate-y-8">
+                        <img src="${o.avatarHover}" class="absolute inset-0 w-full h-full object-cover transition-all duration-500 z-10 opacity-0 scale-95 translate-y-8 group-hover:opacity-100 group-hover:translate-y-0">
+                    </div>
+                    <div class="text-left">
+                        <h3 class="font-black text-xl group-hover:text-blue-600 transition-colors">${o.adSoyad}</h3>
+                        <p class="text-sm font-bold text-blue-500 font-mono italic">No: ${o.no}</p>
+                        <p class="text-xs text-gray-400 mt-2 border-t dark:border-gray-700 pt-2 font-bold uppercase tracking-widest">${o.dal}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- FORM YÖNETİMİ (Submit Event) ---
+        const studentForm = document.getElementById('studentForm');
+
+        studentForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Sayfanın yenilenmesini engelle
+
+            const yeniOgrenci = {
+                adSoyad: document.getElementById('formAd').value,
+                no: document.getElementById('formNo').value,
+                sinif: "AMP-11/A",
+                alan: "Bilişim Teknolojileri",
+                dal: document.getElementById('formDal').value,
+                avatarNormal: `https://api.dicebear.com/7.x/avataaars/svg?seed=${document.getElementById('formNo').value}&translateY=50`,
+                avatarHover: `https://api.dicebear.com/7.x/avataaars/svg?seed=${document.getElementById('formNo').value}&translateY=0`
+            };
+
+            ogrenciler.push(yeniOgrenci); // Listeye ekle
+            render(); // Ekranı güncelle
+            studentForm.reset(); // Formu temizle
+            modal.classList.add('hidden'); // Modalı kapat
+        });
+
+        // --- ARAMA FİLTRESİ ---
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const terim = e.target.value.toLowerCase();
+            render(ogrenciler.filter(o => o.adSoyad.toLowerCase().includes(terim) || o.no.includes(terim)));
+        });
+
+        render();
+    </script>
+</body>
+</html>
