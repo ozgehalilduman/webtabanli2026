@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS 1. Gün - Senaryo Bazlı Eğitim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body id="main-body" class="bg-gray-100 min-h-screen transition-colors duration-500">
+
+    <div class="container mx-auto p-8 space-y-12">
+        
+        <section class="flex justify-between items-center p-6 bg-white shadow-md rounded-2xl dark-target">
+            <h1 id="main-title" class="text-2xl font-bold text-gray-800">JS Uygulama Paneli</h1>
+            <button id="theme-toggle" class="px-6 py-2 bg-slate-800 text-white rounded-full hover:bg-slate-700 transition">
+                Tema Değiştir 🌙/☀️
+            </button>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-semibold mb-6 text-gray-700">Abonelik Paketleri (Dinamik Veri)</h2>
+            <div id="pricing-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                </div>
+        </section>
+
+        <section class="max-w-md mx-auto p-6 bg-white shadow-xl rounded-2xl border-t-4 border-blue-500 dark-target">
+            <h2 class="text-xl font-bold mb-4">Hızlı Sipariş</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-600">Ürün Adedi (Birim: 150₺)</label>
+                    <input type="number" id="quantity-input" value="1" min="1" 
+                           class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+                </div>
+                <div id="total-display" class="text-2xl font-black text-blue-600">
+                    Toplam: 150₺
+                </div>
+                <div id="shipping-badge" class="hidden">
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold uppercase">
+                        Kargo Bedava! 🚚
+                    </span>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- SENARYO 2: TEMA DEĞİŞTİRİCİ MANTIĞI ---
+        const themeBtn = document.querySelector("#theme-toggle");
+        const body = document.querySelector("#main-body");
+        const cards = document.querySelectorAll(".dark-target");
+
+        themeBtn.addEventListener("click", () => {
+            body.classList.toggle("bg-slate-900");
+            // Birden fazla elementte class değiştirmek (Örn: Başlık rengi)
+            document.querySelector("#main-title").classList.toggle("text-white");
+            
+            cards.forEach(card => {
+                card.classList.toggle("bg-slate-800");
+                card.classList.toggle("text-white");
+                card.classList.toggle("shadow-none");
+            });
+        });
+
+
+        // --- SENARYO 1: MAP & FILTER MANTIĞI ---
+        const paketler = [
+            { ad: "Başlangıç", fiyat: 0, ozellik: "1 Proje", populer: false },
+            { ad: "Profesyonel", fiyat: 199, ozellik: "10 Proje", populer: true },
+            { ad: "Kurumsal", fiyat: 499, ozellik: "Sınırsız Proje", populer: false }
+        ];
+
+        const container = document.querySelector("#pricing-container");
+
+        // Veriyi dönüştürüp HTML'e basalım
+        container.innerHTML = paketler.map(paket => `
+            <div class="p-6 rounded-2xl bg-white border-2 ${paket.populer ? 'border-blue-500 scale-105 shadow-lg' : 'border-transparent shadow-md'} dark-target">
+                ${paket.populer ? '<span class="text-xs font-bold text-blue-500 uppercase">En Popüler</span>' : ''}
+                <h3 class="text-2xl font-bold">${paket.ad}</h3>
+                <p class="text-4xl font-black my-4">${paket.fiyat}₺<span class="text-sm font-normal text-gray-500">/ay</span></p>
+                <ul class="text-gray-600 space-y-2 mb-6">
+                    <li>✅ ${paket.ozellik}</li>
+                    <li>✅ 7/24 Destek</li>
+                </ul>
+                <button class="w-full py-2 ${paket.populer ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'} rounded-xl font-bold">Satın Al</button>
+            </div>
+        `).join("");
+
+
+        // --- SENARYO 3: SEPET HESAPLAYICI MANTIĞI ---
+        const quantityInput = document.querySelector("#quantity-input");
+        const totalDisplay = document.querySelector("#total-display");
+        const shippingBadge = document.querySelector("#shipping-badge");
+
+        quantityInput.addEventListener("input", (e) => {
+            const adet = e.target.value;
+            const birimFiyat = 150;
+            const toplam = adet * birimFiyat;
+
+            totalDisplay.textContent = `Toplam: ${toplam}₺`;
+
+            // Mantıksal Kontrol: 500₺ üzerine kargo bedava
+            if (toplam >= 500) {
+                shippingBadge.classList.remove("hidden");
+                totalDisplay.classList.replace("text-blue-600", "text-green-600");
+            } else {
+                shippingBadge.classList.add("hidden");
+                totalDisplay.classList.replace("text-green-600", "text-blue-600");
+            }
+        });
+    </script>
+</body>
+</html>

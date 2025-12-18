@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailwind Renk Değiştirici</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body id="bgBody" class="min-h-screen flex items-center justify-center transition-colors duration-500 bg-gray-100">
+
+    <div class="bg-white p-10 rounded-2xl shadow-2xl text-center max-w-sm w-full mx-4">
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Renk Değiştirici</h1>
+        <p class="text-gray-500 mb-6">Arka plan rengini rastgele değiştirin</p>
+        
+        <div class="bg-gray-100 py-3 px-6 rounded-lg mb-6 border border-gray-200">
+            <span id="colorCode" class="font-mono text-xl font-bold text-blue-600 uppercase">#F3F4F6</span>
+        </div>
+
+        <button id="colorBtn" 
+            class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 px-6 rounded-xl transition-transform active:scale-95">
+            Rengi Değiştir
+        </button>
+    </div>
+
+    <script>
+        // 1. DOM Elementlerini Seçelim
+        const body = document.getElementById('bgBody');
+        const colorText = document.getElementById('colorCode');
+        const btn = document.getElementById('colorBtn');
+
+        // 2. Rastgele Renk Üreten Fonksiyon
+        function generateRandomColor() {
+            const chars = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += chars[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // 3. EVENT: Butona tıklandığında ne olacak?
+        btn.addEventListener('click', () => {
+            const newColor = generateRandomColor();
+
+            // DOM Değişikliği 1: Arka plan rengini güncelle
+            body.style.backgroundColor = newColor;
+
+            // DOM Değişikliği 2: Ekrandaki metni güncelle
+            colorText.textContent = newColor;
+            colorText.style.color = newColor;
+        });
+    </script>
+</body>
+</html>

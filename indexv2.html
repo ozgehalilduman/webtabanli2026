@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailwind Todo App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Yapılacaklar Listesi</h1>
+        
+        <div class="flex gap-2 mb-6">
+            <input type="text" id="todoInput" placeholder="Yeni bir görev ekle..." 
+                class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button id="addBtn" 
+                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors font-semibold">
+                Ekle
+            </button>
+        </div>
+
+        <ul id="todoList" class="space-y-3">
+            </ul>
+    </div>
+
+    <script>
+        // 1. DOM Elementlerini Seçme
+        const input = document.getElementById('todoInput');
+        const addBtn = document.getElementById('addBtn');
+        const list = document.getElementById('todoList');
+
+        // 2. Fonksiyon: Yeni Eleman Oluşturma (DOM Manipülasyonu)
+        function createTodo(text) {
+            const li = document.createElement('li');
+            li.className = "flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-200 group animate-fadeIn";
+            
+            li.innerHTML = `
+                <span class="text-gray-700">${text}</span>
+                <button class="delete-btn text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity font-bold">
+                    Sil
+                </button>
+            `;
+
+            // 3. Event: Silme İşlemi (Local Event)
+            li.querySelector('.delete-btn').addEventListener('click', () => {
+                li.remove();
+            });
+
+            // Tamamlandı işaretleme (Toggle)
+            li.addEventListener('click', (e) => {
+                if(e.target.tagName !== 'BUTTON') {
+                    li.querySelector('span').classList.toggle('line-through');
+                    li.querySelector('span').classList.toggle('text-gray-400');
+                }
+            });
+
+            list.appendChild(li);
+        }
+
+        // 4. Event: Ekleme Butonuna Basma
+        addBtn.addEventListener('click', () => {
+            if (input.value.trim() !== "") {
+                createTodo(input.value);
+                input.value = ""; // Inputu temizle
+            }
+        });
+
+        // Enter tuşu desteği
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addBtn.click();
+        });
+
+        /* 5. FETCH API ÖRNEĞİ (Opsiyonel)
+        
+           Eğer gerçek bir sunucudan verileri çekmek istersen şu yapıyı kullanabilirsin:
+        */           
+           async function getTodos() {
+               const res = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=3');
+               const data = await res.json();
+               data.forEach(todo => createTodo(todo.title));
+           }
+           getTodos(); 
+        /**/
+    </script>
+
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+    </style>
+</body>
+</html>
